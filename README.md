@@ -11,9 +11,9 @@ For system requirements and installation instructions of cuda toolkit, please re
 
 ### Getting the tool
 
-Using git clone the repository of CUDA_Device_Attribute_generation using the command below.
+Using git clone the repository of CUDA_Device_Attribute_Generation using the command below.
 ```
-git clone https://github.com/BDHU/CUDA_Device_Attribute_generation.git
+git clone https://github.com/BDHU/CUDA_Device_Attribute_Generation.git
 ```
 ## How to Build
 
