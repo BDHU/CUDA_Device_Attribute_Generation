@@ -22,3 +22,17 @@ Simply run
 make
 ```
 It is only tested on Linux. To testing it on Windows, please refer to [cuda-samples](https://github.com/NVIDIA/cuda-samples) for guidances. The Makefile is modified to include header files in current directory instead of the original -I../../Common.
+
+## How to Use
+
+Simple run the executable using:
+```
+./deviceQuery [full path of the file to be generated] [device ID]
+```
+
+For example, you can run:
+```
+./deviceQuery ./ 0
+```
+
+This will generate a C/C++ header file named "cuda_device_attr.h" in the current working directory of the script. For multi_GPU users, simply change the device ID to generate headers for target GPUs in the system.
