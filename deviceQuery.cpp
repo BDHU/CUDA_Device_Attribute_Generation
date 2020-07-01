@@ -89,13 +89,13 @@ static inline void writeSharedMem (std::fstream &cudaHdrFile, cudaDeviceProp &de
         case 2:
         {
             cudaHdrFile << "#define SHARED_MEMORY_BANKS    " << 32 << std::endl;
-            cudaHdrFile << "#define SHARED_MEMORY_BANK_BANDWIDTH    " << 4 << " // Each bank has a bandwidth of 32 bits per clock cycle" << std::endl;
+            cudaHdrFile << "#define SHARED_MEMORY_BANK_BANDWIDTH    " << 4 << " // Each bank has a bandwidth of 32 bits per two clock cycle" << std::endl;
             break;
         }
         case 3:
         {
             cudaHdrFile << "#define SHARED_MEMORY_BANKS    " << 32 << std::endl;
-            cudaHdrFile << "#define SHARED_MEMORY_BANK_BANDWIDTH    " << 8 << " // Each bank has a bandwidth of 64 bits per clock cycle" << std::endl;
+            cudaHdrFile << "#define SHARED_MEMORY_BANK_BANDWIDTH    " << 8 << " // Each bank has a bandwidth of 64 bits per clock cycle, consider using cudaDeviceSetSharedMemConfig()" << std::endl;
             break;
         }
         /* Technically there is not device of cap 4.X */
@@ -105,6 +105,12 @@ static inline void writeSharedMem (std::fstream &cudaHdrFile, cudaDeviceProp &de
             cudaHdrFile << "#define SHARED_MEMORY_BANK_BANDWIDTH    " << 4 << " // Each bank has a bandwidth of 32 bits per clock cycle" << std::endl;
             break;
         }
+        /*
+         * Based on https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html#shared-memory-and-memory-banks,
+         * On devices of compute capability 5.x or newer, each bank has a bandwidth
+         * of 32 bits every clock cycle, and successive 32-bit words are assigned
+         * to successive banks
+         * */
         case 5:
         {
             cudaHdrFile << "#define SHARED_MEMORY_BANKS    " << 32 << std::endl;
