@@ -64,6 +64,74 @@ inline void getCudaAttribute(T *attribute, CUdevice_attribute device_attribute,
 
 #endif /* CUDART_VERSION < 5000 */
 
+static inline void writeSharedMem (std::fstream &cudaHdrFile, cudaDeviceProp &deviceProp) {
+    /* write total shared mem per block */
+    cudaHdrFile << "#define SHARED_MEM_PER_BLOCK    " << 
+        deviceProp.sharedMemPerBlock << std::endl;
+
+
+    /* share mem per sm */
+    cudaHdrFile << "#define SHARED_MEM_PER_SM    " <<
+        deviceProp.sharedMemPerMultiprocessor << std::endl;
+
+
+    int sm_major_capability = deviceProp.major;
+    int sm_minor_capability = deviceProp.minor;
+    switch (sm_major_capability)
+    {
+        case 1:
+        {
+            cudaHdrFile << "#define SHARED_MEMORY_BANKS    " << 16 << std::endl;
+            break;
+        }
+        case 2:
+        {
+            cudaHdrFile << "#define SHARED_MEMORY_BANKS    " << 32 << std::endl;
+            break;
+        }
+        case 3:
+        {
+            cudaHdrFile << "#define SHARED_MEMORY_BANKS    " << 32 << std::endl;
+            cudaHdrFile << "#define SHARED_MEMORY_BANK_BANDWIDTH    " << 8 << " // Each bank has a bandwidth of 64 bits per clock cycle" << std::endl;
+            break;
+        }
+        /* Technically there is not device of cap 4.X */
+        case 4:
+        {
+            cudaHdrFile << "#define SHARED_MEMORY_BANKS    " << 32 << std::endl;
+            cudaHdrFile << "#define SHARED_MEMORY_BANK_BANDWIDTH    " << 4 << " // Each bank has a bandwidth of 32 bits per clock cycle" << std::endl;
+            break;
+        }
+        case 5:
+        {
+            cudaHdrFile << "#define SHARED_MEMORY_BANKS    " << 32 << std::endl;
+            cudaHdrFile << "#define SHARED_MEMORY_BANK_BANDWIDTH    " << 4 << " // Each bank has a bandwidth of 32 bits per clock cycle" << std::endl;
+            break;
+        }
+        case 6:
+        {
+            cudaHdrFile << "#define SHARED_MEMORY_BANKS    " << 32 << std::endl;
+            cudaHdrFile << "#define SHARED_MEMORY_BANK_BANDWIDTH    " << 4 << " // Each bank has a bandwidth of 32 bits per clock cycle" << std::endl;
+            break;
+        }
+        case 7:
+        {
+            cudaHdrFile << "#define SHARED_MEMORY_BANKS    " << 32 << std::endl;
+            break;
+        }
+        case 8:
+        {
+            cudaHdrFile << "#define SHARED_MEMORY_BANKS    " << 32 << std::endl;
+            break;
+        }
+        default:
+        {
+            std::cerr << "No matching CUDA device capability." << std::endl;
+            exit(1);
+        }
+    }
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Program main
@@ -301,22 +369,16 @@ int main(int argc, char **argv) {
     cudaHdrFile << "#define CONST_MEM    " << deviceProp.totalConstMem << std::endl;
 
 
+    writeSharedMem(cudaHdrFile, deviceProp);
+
     printf("  Total amount of shared memory per block:       %zu bytes\n",
            deviceProp.sharedMemPerBlock);
 
-    /* write total shared mem per block */
-    cudaHdrFile << "#define SHARED_MEM_PER_BLOCK    " << 
-        deviceProp.sharedMemPerBlock << std::endl;
-
-
+    
     printf("  Total shared memory per multiprocessor:        %zu bytes\n",
            deviceProp.sharedMemPerMultiprocessor);
 
-    /* share mem per sm */
-    cudaHdrFile << "#define SHARED_MEM_PER_SM    " <<
-        deviceProp.sharedMemPerMultiprocessor << std::endl;
-
-
+    
     printf("  Total number of registers available per block: %d\n",
            deviceProp.regsPerBlock);
 
@@ -374,9 +436,6 @@ int main(int argc, char **argv) {
         deviceProp.maxGridSize[1] << std::endl;
     cudaHdrFile << "#define MAX_GRIDS_DIM_Z    " << 
         deviceProp.maxGridSize[2] << std::endl;
-
-
-
 
 
     printf("  Maximum memory pitch:                          %zu bytes\n",
