@@ -65,6 +65,8 @@ inline void getCudaAttribute(T *attribute, CUdevice_attribute device_attribute,
 #endif /* CUDART_VERSION < 5000 */
 
 static inline void writeSharedMem (std::fstream &cudaHdrFile, cudaDeviceProp &deviceProp) {
+    size_t default_bank_width = 4; // in bytes
+
     /* write total shared mem per block */
     cudaHdrFile << "#define SHARED_MEM_PER_BLOCK    " << 
         deviceProp.sharedMemPerBlock << std::endl;
@@ -74,7 +76,6 @@ static inline void writeSharedMem (std::fstream &cudaHdrFile, cudaDeviceProp &de
     cudaHdrFile << "#define SHARED_MEM_PER_SM    " <<
         deviceProp.sharedMemPerMultiprocessor << std::endl;
 
-
     int sm_major_capability = deviceProp.major;
     int sm_minor_capability = deviceProp.minor;
     switch (sm_major_capability)
@@ -82,11 +83,13 @@ static inline void writeSharedMem (std::fstream &cudaHdrFile, cudaDeviceProp &de
         case 1:
         {
             cudaHdrFile << "#define SHARED_MEMORY_BANKS    " << 16 << std::endl;
+            cudaHdrFile << "#define SHARED_MEMORY_BANK_BANDWIDTH    " << 4 << " // Each bank has a bandwidth of 32 bits per clock cycle" << std::endl;
             break;
         }
         case 2:
         {
             cudaHdrFile << "#define SHARED_MEMORY_BANKS    " << 32 << std::endl;
+            cudaHdrFile << "#define SHARED_MEMORY_BANK_BANDWIDTH    " << 4 << " // Each bank has a bandwidth of 32 bits per clock cycle" << std::endl;
             break;
         }
         case 3:
@@ -117,11 +120,13 @@ static inline void writeSharedMem (std::fstream &cudaHdrFile, cudaDeviceProp &de
         case 7:
         {
             cudaHdrFile << "#define SHARED_MEMORY_BANKS    " << 32 << std::endl;
+            cudaHdrFile << "#define SHARED_MEMORY_BANK_BANDWIDTH    " << 4 << " // Each bank has a bandwidth of 32 bits per clock cycle (no doc)" << std::endl;
             break;
         }
         case 8:
         {
             cudaHdrFile << "#define SHARED_MEMORY_BANKS    " << 32 << std::endl;
+            cudaHdrFile << "#define SHARED_MEMORY_BANK_BANDWIDTH    " << 4 << " // Each bank has a bandwidth of 32 bits per clock cycle (no doc)" << std::endl;
             break;
         }
         default:
